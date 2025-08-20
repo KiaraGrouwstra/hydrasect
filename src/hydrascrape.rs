@@ -1,4 +1,4 @@
-use std::{fs::create_dir_all, io::Write};
+use std::{fs::create_dir_all, fs::copy, io::Write};
 
 use anyhow::Result;
 use reqwest::{
@@ -103,7 +103,9 @@ fn main() -> Result<()> {
     }
 
     eprintln!("Replacing old history file with new data.");
-    history_file.into_temp_path().persist(history_file_path)?;
+    let temp_path = history_file.into_temp_path();
+    copy(&temp_path, &history_file_path)?;
+    temp_path.close()?;
 
     Ok(())
 }
